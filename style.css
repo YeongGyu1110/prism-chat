@@ -28,28 +28,24 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* 모바일 브라우저 주소창 이슈를 해결하는 최신 스펙 d(dynamic)vh 사용 */
     height: 100dvh; 
     overflow: hidden;
 }
 
-/* 스크롤바 미학적 커스텀 */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
 
-/* --- [Mobile First] 기본 스타일 (스마트폰 화면 기준) --- */
 .container {
     width: 100%;
-    /* 모바일에서는 화면을 꽉 채워 네이티브 앱처럼 보이게 함 */
     height: 100dvh;
     max-height: none;
-    background: rgba(20, 18, 30, 0.85); /* 모바일에서는 살짝 더 어둡게 */
+    background: rgba(20, 18, 30, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: none; /* 모바일에서는 테두리 제거 */
-    border-radius: 0; /* 모바일에서는 각진 모서리 (Edge-to-Edge) */
+    border: none;
+    border-radius: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -58,7 +54,6 @@ body {
 
 .hidden { display: none !important; }
 
-/* --- Signaling Section --- */
 #signaling-container {
     padding: 30px 20px;
     overflow-y: auto;
@@ -135,7 +130,6 @@ textarea {
     padding: 14px;
     resize: none;
     font-family: 'Consolas', 'Monaco', monospace;
-    /* iOS Safari 줌인 방지를 위해 반드시 16px 이상 유지 */
     font-size: 16px; 
     outline: none;
     transition: all 0.3s ease;
@@ -191,7 +185,7 @@ button {
     border-radius: 12px;
     background-color: var(--primary-color);
     color: white;
-    font-size: 16px; /* 모바일 터치 최적화 */
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -217,7 +211,6 @@ button:disabled {
     100% { background-color: rgba(108, 92, 231, 0.2); }
 }
 
-/* --- Chat Section --- */
 #chat-container {
     display: flex;
     flex-direction: column;
@@ -325,7 +318,7 @@ button:disabled {
 
 #message-form {
     padding: 16px;
-    background: rgba(0,0,0,0.15); /* 모바일 하단 구분감 제공 */
+    background: rgba(0,0,0,0.15);
 }
 
 .input-wrapper {
@@ -351,7 +344,6 @@ button:disabled {
     border: none;
     background: transparent;
     color: white;
-    /* iOS 줌인 방지 */
     font-size: 16px; 
     outline: none;
     line-height: 1.4;
@@ -374,15 +366,12 @@ button:disabled {
 }
 
 
-/* =========================================================
-   🖥️[Tablet & PC 분기점] - 미디어 쿼리 통합 구간 
-========================================================= */
 @media (min-width: 768px) {
     .container {
         max-width: 800px;
-        height: 94vh;       /* 데스크톱에서는 꽉 차지 않게 여백 줌 */
+        height: 94vh;
         max-height: 900px;
-        border-radius: 24px; /* 유리 박스 모서리 둥글게 복구 */
+        border-radius: 24px;
         border: 1px solid var(--glass-border);
         background: rgba(20, 18, 30, 0.75);
     }
