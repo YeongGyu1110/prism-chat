@@ -44,22 +44,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const encodeSDP = (sdpObj) => btoa(encodeURIComponent(JSON.stringify(sdpObj)));
     const decodeSDP = (encodedText) => JSON.parse(decodeURIComponent(atob(encodedText.trim())));
 
-    const setupAutoCopy = (element, name) => {
+    const setupAutoCopy = (element) => {
         element.addEventListener('click', async () => {
             if (!element.value) return;
             try {
                 await navigator.clipboard.writeText(element.value);
-                alert(`✅ [${name}]가 클립보드에 복사되었습니다!\n상대방에게 전달해주세요.`);
+
+                const wrapper = element.parentElement;
+                const overlay = wrapper.querySelector('.copy-overlay');
+                const span = overlay.querySelector('span');
+                const svg = overlay.querySelector('svg');
+
+                const originalText = span.textContent;
+                const originalSvg = svg.innerHTML;
+
+                span.textContent = '완료';
+                svg.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>'; // V자 체크 SVG
+                overlay.style.background = 'var(--success)';
+                overlay.style.color = '#fff';
+                overlay.style.borderColor = 'var(--success)';
+                overlay.style.opacity = '1';
+
+                setTimeout(() => {
+                    span.textContent = originalText;
+                    svg.innerHTML = originalSvg;
+                    overlay.style.background = '';
+                    overlay.style.color = '';
+                    overlay.style.borderColor = '';
+                    overlay.style.opacity = '';
+                }, 2000);
+
             } catch (err) {
                 alert('복사 실패! 직접 텍스트를 선택해서 복사해주세요.');
             }
         });
         element.style.cursor = 'pointer';
-        element.title = '클릭하면 복사됩니다.';
     };
 
-    setupAutoCopy(offerSdpText, '연결 코드');
-    setupAutoCopy(answerSdpText, '응답 코드');
+    setupAutoCopy(offerSdpText);
+    setupAutoCopy(answerSdpText);
 
     const setupPeerConnection = (isOfferer) => {
         peerConnection = new RTCPeerConnection(iceServers);
