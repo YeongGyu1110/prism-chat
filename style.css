@@ -28,42 +28,39 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    /* 모바일 브라우저 주소창 이슈를 해결하는 최신 스펙 d(dynamic)vh 사용 */
+    height: 100dvh; 
     overflow: hidden;
 }
 
-::-webkit-scrollbar { width: 5px; }
+/* 스크롤바 미학적 커스텀 */
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
 
+/* --- [Mobile First] 기본 스타일 (스마트폰 화면 기준) --- */
 .container {
     width: 100%;
-    max-width: 800px;
-    height: 100%;
-    max-height: 900px;
-    background: rgba(20, 18, 30, 0.75);
+    /* 모바일에서는 화면을 꽉 채워 네이티브 앱처럼 보이게 함 */
+    height: 100dvh;
+    max-height: none;
+    background: rgba(20, 18, 30, 0.85); /* 모바일에서는 살짝 더 어둡게 */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow);
+    border: none; /* 모바일에서는 테두리 제거 */
+    border-radius: 0; /* 모바일에서는 각진 모서리 (Edge-to-Edge) */
     display: flex;
     flex-direction: column;
     overflow: hidden;
     position: relative;
 }
 
-@media (min-width: 768px) {
-    .container {
-        height: 94vh;
-        border-radius: 24px;
-    }
-}
-
 .hidden { display: none !important; }
 
+/* --- Signaling Section --- */
 #signaling-container {
-    padding: 40px 25px;
+    padding: 30px 20px;
     overflow-y: auto;
     height: 100%;
 }
@@ -79,7 +76,7 @@ body {
 .header-title h2 {
     margin: 0;
     font-weight: 800;
-    font-size: 28px;
+    font-size: 24px;
     letter-spacing: -0.5px;
     background: linear-gradient(to right, #fff, var(--primary-light));
     -webkit-background-clip: text;
@@ -89,33 +86,22 @@ body {
 .subtitle {
     text-align: center;
     color: var(--text-sub);
-    font-size: 14px;
-    margin-bottom: 40px;
+    font-size: 13px;
+    margin-bottom: 30px;
 }
 
 .step-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 20px;
-}
-
-@media (min-width: 768px) {
-    .step-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
-    .step-full { grid-column: span 2; }
+    gap: 16px;
 }
 
 .step {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    padding: 24px;
-    border-radius: 20px;
+    padding: 20px;
+    border-radius: 16px;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.step:hover {
-    border-color: rgba(108, 92, 231, 0.3);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2), inset 0 0 20px rgba(108, 92, 231, 0.05);
-    transform: translateY(-2px);
 }
 
 .step-header {
@@ -137,7 +123,7 @@ body {
 .badge-a { background: rgba(108, 92, 231, 0.2); color: var(--primary-light); border: 1px solid rgba(108, 92, 231, 0.3); }
 .badge-b { background: rgba(0, 206, 201, 0.15); color: var(--success); border: 1px solid rgba(0, 206, 201, 0.3); }
 
-.step h3 { margin: 0; font-size: 18px; color: var(--text-main); }
+.step h3 { margin: 0; font-size: 17px; color: var(--text-main); }
 .step p { font-size: 13px; color: var(--text-sub); margin: 0 0 16px; line-height: 1.5; }
 
 textarea {
@@ -149,7 +135,8 @@ textarea {
     padding: 14px;
     resize: none;
     font-family: 'Consolas', 'Monaco', monospace;
-    font-size: 13px;
+    /* iOS Safari 줌인 방지를 위해 반드시 16px 이상 유지 */
+    font-size: 16px; 
     outline: none;
     transition: all 0.3s ease;
 }
@@ -166,7 +153,6 @@ textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 .readonly-box { height: 75px; color: var(--primary-light); cursor: pointer; }
 
 .copy-wrapper { position: relative; margin-top: 10px; }
-
 .copy-overlay {
     position: absolute;
     top: 8px;
@@ -198,36 +184,28 @@ textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 
 .final-step-wrap { display: flex; flex-direction: column; gap: 12px; }
 
-@media (min-width: 768px) {
-    .final-step-wrap { flex-direction: row; align-items: stretch; }
-    .final-step-wrap .input-box { flex: 1; margin: 0; }
-    .final-step-wrap .btn-primary { flex: 0 0 140px; margin: 0; }
-}
-
-.btn-primary {
+button {
     width: 100%;
     padding: 14px;
     border: none;
     border-radius: 12px;
     background-color: var(--primary-color);
     color: white;
-    font-size: 15px;
+    font-size: 16px; /* 모바일 터치 최적화 */
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.btn-primary:hover:not(:disabled) {
+button:hover:not(:disabled) {
     background-color: var(--primary-hover);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
 }
 
-.btn-glow {
-    box-shadow: 0 0 15px rgba(108, 92, 231, 0.5);
-}
+.btn-glow { box-shadow: 0 0 15px rgba(108, 92, 231, 0.5); }
 
-.btn-primary:disabled {
+button:disabled {
     background-color: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.4);
     cursor: not-allowed;
@@ -239,6 +217,7 @@ textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
     100% { background-color: rgba(108, 92, 231, 0.2); }
 }
 
+/* --- Chat Section --- */
 #chat-container {
     display: flex;
     flex-direction: column;
@@ -247,7 +226,7 @@ textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 }
 
 #chat-header {
-    padding: 16px 24px;
+    padding: 16px 20px;
     background: rgba(0, 0, 0, 0.2);
     border-bottom: 1px solid var(--glass-border);
     display: flex;
@@ -256,11 +235,11 @@ textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
     backdrop-filter: blur(10px);
 }
 
-.header-info { display: flex; align-items: center; gap: 14px; }
+.header-info { display: flex; align-items: center; gap: 12px; }
 
 .avatar-circle {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: linear-gradient(135deg, rgba(108, 92, 231, 0.5), rgba(0, 206, 201, 0.5));
     display: flex;
@@ -289,7 +268,7 @@ textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 
 #messages {
     flex-grow: 1;
-    padding: 24px;
+    padding: 20px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -302,14 +281,14 @@ textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 }
 
 .message { 
-    max-width: 75%; 
+    max-width: 80%; 
     display: flex; 
     flex-direction: column; 
     animation: slideUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
 }
 
 .message .text {
-    padding: 12px 18px;
+    padding: 12px 16px;
     font-size: 15px;
     line-height: 1.5;
     word-break: break-word;
@@ -345,8 +324,8 @@ textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 }
 
 #message-form {
-    padding: 20px 24px 24px 24px;
-    background: transparent;
+    padding: 16px;
+    background: rgba(0,0,0,0.15); /* 모바일 하단 구분감 제공 */
 }
 
 .input-wrapper {
@@ -362,21 +341,20 @@ textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 .input-wrapper:focus-within {
     border-color: rgba(108, 92, 231, 0.6);
     background: rgba(0, 0, 0, 0.6);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
 }
 
 #message-input {
     flex-grow: 1;
     height: 44px;
-    max-height: 120px;
+    max-height: 100px;
     padding: 12px 16px;
     border: none;
     background: transparent;
     color: white;
-    font-size: 15px;
+    /* iOS 줌인 방지 */
+    font-size: 16px; 
     outline: none;
     line-height: 1.4;
-    box-shadow: none;
 }
 
 #message-input::placeholder { color: rgba(255, 255, 255, 0.3); }
@@ -388,24 +366,51 @@ textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
     border-radius: 50%;
     background: var(--primary-color);
     color: white;
-    border: none;
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
     margin-left: 8px;
+    padding: 0;
 }
 
-#send-btn:hover:not(:disabled) {
-    background: var(--primary-hover);
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(108, 92, 231, 0.6);
-}
 
-#send-btn:disabled {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.3);
-    cursor: not-allowed;
-    animation: none;
+/* =========================================================
+   🖥️[Tablet & PC 분기점] - 미디어 쿼리 통합 구간 
+========================================================= */
+@media (min-width: 768px) {
+    .container {
+        max-width: 800px;
+        height: 94vh;       /* 데스크톱에서는 꽉 차지 않게 여백 줌 */
+        max-height: 900px;
+        border-radius: 24px; /* 유리 박스 모서리 둥글게 복구 */
+        border: 1px solid var(--glass-border);
+        background: rgba(20, 18, 30, 0.75);
+    }
+    
+    #signaling-container { padding: 40px 30px; }
+    .header-title h2 { font-size: 28px; }
+    .subtitle { font-size: 14px; margin-bottom: 40px; }
+    
+    .step-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+    .step-full { grid-column: span 2; }
+    .step { padding: 24px; }
+    .step:hover {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2), inset 0 0 20px rgba(108, 92, 231, 0.05);
+        transform: translateY(-2px);
+    }
+    
+    .final-step-wrap {
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .final-step-wrap .input-box { flex: 1; margin: 0; }
+    .final-step-wrap button { flex: 0 0 140px; margin: 0; }
+    
+    #chat-header { padding: 16px 24px; }
+    #messages { padding: 24px; gap: 18px; }
+    #message-form { padding: 20px 24px 24px 24px; background: transparent; }
+    #message-input { max-height: 120px; }
 }
