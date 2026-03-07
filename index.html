@@ -17,35 +17,76 @@
 <body>
 
     <div id="app-container" class="container">
+
         <div id="signaling-container">
-            <h2>🔐 보안 P2P 연결 설정</h2>
+            <div class="header-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#prism-grad)" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <defs>
+                        <linearGradient id="prism-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#a29bfe" />
+                            <stop offset="100%" stop-color="#6c5ce7" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <h2>보안 P2P 연결</h2>
+            </div>
+            <p class="subtitle">서버를 거치지 않는 1:1 비밀 대화방입니다.</p>
 
             <div class="step-grid">
-                <div class="step">
-                    <h3>User A: 방 만들기</h3>
-                    <p>채팅방을 개설합니다. 아래 버튼을 눌러 생성된 코드를 친구에게 보내주세요.</p>
-                    <button id="create-offer-btn">1. 연결 코드 생성</button>
-                    <textarea id="offer-sdp" placeholder="[생성된 코드 대기중...]" readonly
-                        style="margin-top: 10px;"></textarea>
+                <div class="step step-a">
+                    <div class="step-header">
+                        <span class="badge badge-a">User A</span>
+                        <h3>방 만들기</h3>
+                    </div>
+                    <p>코드를 생성하여 상대방에게 전달해주세요.</p>
+                    <button id="create-offer-btn" class="btn-primary">1. 연결 코드 생성</button>
+                    <div class="copy-wrapper">
+                        <textarea id="offer-sdp" class="readonly-box" placeholder="[생성된 코드 대기중...]" readonly></textarea>
+                        <div class="copy-overlay">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2"
+                                fill="none">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span>복사</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="step">
-                    <h3>User B: 참여하기</h3>
-                    <p>친구가 보낸 코드를 아래에 넣고 '응답 코드'를 생성하여 친구에게 다시 보내주세요.</p>
-                    <textarea id="received-sdp-answer" placeholder="친구의 연결 코드를 여기에 붙여넣으세요"></textarea>
-                    <button id="create-answer-btn">2. 응답 코드 생성</button>
-                    <textarea id="answer-sdp" placeholder="[응답 코드 대기중...]" readonly
-                        style="margin-top: 10px;"></textarea>
+                <div class="step step-b">
+                    <div class="step-header">
+                        <span class="badge badge-b">User B</span>
+                        <h3>참여하기</h3>
+                    </div>
+                    <p>전달받은 코드를 넣고 응답 코드를 생성하세요.</p>
+                    <textarea id="received-sdp-answer" class="input-box" placeholder="상대방의 연결 코드를 붙여넣기..."></textarea>
+                    <button id="create-answer-btn" class="btn-primary" style="margin-top:8px;">2. 응답 코드 생성</button>
+                    <div class="copy-wrapper">
+                        <textarea id="answer-sdp" class="readonly-box" placeholder="[응답 코드 대기중...]" readonly></textarea>
+                        <div class="copy-overlay">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2"
+                                fill="none">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span>복사</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="step step-full">
-                    <h3>User A: 연결 확정</h3>
-                    <p>친구가 보낸 '응답 코드'를 여기에 입력하여 연결을 마무리하세요.</p>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <textarea id="received-sdp-final" placeholder="친구의 응답 코드를 여기에 붙여넣으세요"
-                            style="flex: 1; min-width: 250px;"></textarea>
-                        <button id="connect-btn" style="flex: 0 0 120px; margin-top: 0; height: auto;">3. 연결 시작
-                            🚀</button>
+                    <div class="step-header">
+                        <span class="badge badge-a">User A</span>
+                        <h3>연결 확정</h3>
+                    </div>
+                    <p>상대방이 보낸 응답 코드를 입력하여 연결을 시작하세요.</p>
+                    <div class="final-step-wrap">
+                        <textarea id="received-sdp-final" class="input-box"
+                            placeholder="상대방의 응답 코드를 붙여넣기..."></textarea>
+                        <button id="connect-btn" class="btn-primary btn-glow">3. 연결 시작 🚀</button>
                     </div>
                 </div>
             </div>
@@ -53,15 +94,40 @@
 
         <div id="chat-container" class="hidden">
             <div id="chat-header">
-                <h2>💬 Secret Chat</h2>
-                <div id="status">연결 대기중...</div>
+                <div class="header-info">
+                    <div class="avatar-circle">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="white" stroke-width="2" fill="none">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2>Prism Secret</h2>
+                        <div id="status">
+                            <span class="status-dot"></span> 연결 대기중...
+                        </div>
+                    </div>
+                </div>
             </div>
+
             <div id="messages">
-                <div class="message system">P2P 연결은 암호화되어 전송됩니다.</div>
+                <div class="message system">
+                    <div class="text">🔒 P2P 연결은 종단간 암호화되어 안전합니다.</div>
+                </div>
             </div>
+
             <form id="message-form">
-                <input type="text" id="message-input" placeholder="메시지를 입력하세요..." autocomplete="off" disabled>
-                <button type="submit" id="send-btn" disabled>전송</button>
+                <div class="input-wrapper">
+                    <textarea id="message-input" placeholder="메시지 입력 (Shift+Enter로 줄바꿈)" rows="1" disabled></textarea>
+                    <button type="submit" id="send-btn" disabled>
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round"
+                            style="transform: translateX(-1px) translateY(1px) rotate(45deg);">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
             </form>
         </div>
 

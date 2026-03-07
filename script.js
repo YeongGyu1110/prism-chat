@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!element.value) return;
             try {
                 await navigator.clipboard.writeText(element.value);
-                alert(`✅ [${name}]가 클립보드에 복사되었습니다!\n친구에게 붙여넣기 해주세요.`);
+                alert(`✅ [${name}]가 클립보드에 복사되었습니다!\n상대방에게 전달해주세요.`);
             } catch (err) {
                 alert('복사 실패! 직접 텍스트를 선택해서 복사해주세요.');
             }
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createAnswerBtn.onclick = async () => {
         const receivedCode = receivedSdpAnswerText.value.trim();
         if (!receivedCode) {
-            alert('친구에게 받은 연결 코드를 입력해주세요.');
+            alert('상대방에게 받은 연결 코드를 입력해주세요.');
             receivedSdpAnswerText.focus();
             return;
         }
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     connectBtn.onclick = async () => {
         const finalCode = receivedSdpFinalText.value.trim();
         if (!finalCode) {
-            alert('친구에게 받은 응답 코드를 입력해주세요.');
+            alert('상대방에게 받은 응답 코드를 입력해주세요.');
             receivedSdpFinalText.focus();
             return;
         }
@@ -194,6 +194,13 @@ document.addEventListener('DOMContentLoaded', () => {
             connectBtn.textContent = '3. 연결 시작 🚀';
         }
     };
+
+    messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendBtn.click();
+        }
+    });
 
     messageForm.onsubmit = e => {
         e.preventDefault();
