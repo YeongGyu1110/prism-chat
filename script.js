@@ -1,12 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
     const userAgent = navigator.userAgent.toLowerCase();
     if (/kakaotalk|instagram|naver|line/i.test(userAgent)) {
-        alert("⚠️ 카카오톡 등 내장 브라우저에서는 기능이 제한될 수 있습니다.\n우측 상단 메뉴를 눌러 '다른 브라우저(Chrome, Safari)로 열기'를 선택해주세요.");
+        alert("카카오톡 등의 앱 브라우저에서는 연결이 제한될 수 있으므로, 다른 브라우저(Chrome, Safari)로 열어주세요.");
     }
+
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
+            });
+            tabContents.forEach(c => c.classList.add('hidden-tab'));
+            
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected', 'true');
+            const targetId = btn.getAttribute('data-target');
+            document.getElementById(targetId).classList.remove('hidden-tab');
+        });
+    });
 
     const signalingContainer = document.getElementById('signaling-container');
     const chatContainer = document.getElementById('chat-container');
-    const statusDiv = document.getElementById('status');
+    const statusDiv = document.querySelector('.status-text');
+    const statusDot = document.querySelector('.status-dot');
     const messagesDiv = document.getElementById('messages');
     const messageForm = document.getElementById('message-form');
     const messageInput = document.getElementById('message-input');
@@ -36,7 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const logSystemMessage = (text) => {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'message system';
-        msgDiv.textContent = text;
+        const textDiv = document.createElement('div');
+        textDiv.className = 'text';
+        textDiv.textContent = text;
+        msgDiv.appendChild(textDiv);
         messagesDiv.appendChild(msgDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     };
@@ -44,45 +66,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const encodeSDP = (sdpObj) => btoa(encodeURIComponent(JSON.stringify(sdpObj)));
     const decodeSDP = (encodedText) => JSON.parse(decodeURIComponent(atob(encodedText.trim())));
 
-    const setupAutoCopy = (element) => {
-        element.addEventListener('click', async () => {
-            if (!element.value) return;
+    const setupAutoCopy = (wrapperElement) => {
+        const textarea = wrapperElement.querySelector('textarea');
+        const btn = wrapperElement.querySelector('.copy-btn');
+        
+        btn.addEventListener('click', async () => {
+            if (!textarea.value) return;
             try {
-                await navigator.clipboard.writeText(element.value);
-
-                const wrapper = element.parentElement;
-                const overlay = wrapper.querySelector('.copy-overlay');
-                const span = overlay.querySelector('span');
-                const svg = overlay.querySelector('svg');
-
+                await navigator.clipboard.writeText(textarea.value);
+                const span = btn.querySelector('span');
                 const originalText = span.textContent;
-                const originalSvg = svg.innerHTML;
 
                 span.textContent = '완료';
-                svg.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>'; // V자 체크 SVG
-                overlay.style.background = 'var(--success)';
-                overlay.style.color = '#fff';
-                overlay.style.borderColor = 'var(--success)';
-                overlay.style.opacity = '1';
+                btn.classList.add('copied');
 
                 setTimeout(() => {
                     span.textContent = originalText;
-                    svg.innerHTML = originalSvg;
-                    overlay.style.background = '';
-                    overlay.style.color = '';
-                    overlay.style.borderColor = '';
-                    overlay.style.opacity = '';
-                }, 2000);
-
+                    btn.classList.remove('copied');
+                }, 1500);
             } catch (err) {
-                alert('복사 실패! 직접 텍스트를 선택해서 복사해주세요.');
+                alert('복사 실패');
             }
         });
-        element.style.cursor = 'pointer';
     };
 
-    setupAutoCopy(offerSdpText);
-    setupAutoCopy(answerSdpText);
+    document.querySelectorAll('.copy-wrapper').forEach(setupAutoCopy);
 
     const setupPeerConnection = (isOfferer) => {
         peerConnection = new RTCPeerConnection(iceServers);
@@ -93,11 +101,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (peerConnection.localDescription.type === 'offer') {
                 offerSdpText.value = encodedSdp;
-                createOfferBtn.textContent = '✅ 연결 코드 생성 완료 (클릭해서 복사)';
+                createOfferBtn.textContent = '생성 완료';
                 createOfferBtn.disabled = false;
             } else if (peerConnection.localDescription.type === 'answer') {
                 answerSdpText.value = encodedSdp;
-                createAnswerBtn.textContent = '✅ 응답 코드 생성 완료 (클릭해서 복사)';
+                createAnswerBtn.textContent = '생성 완료';
                 createAnswerBtn.disabled = false;
             }
         };
@@ -114,17 +122,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         peerConnection.onconnectionstatechange = () => {
             const state = peerConnection.connectionState;
-            statusDiv.textContent = `상태: ${state}`;
             if (state === 'connected') {
                 signalingContainer.classList.add('hidden');
                 chatContainer.classList.remove('hidden');
-                chatContainer.style.display = 'flex';
                 messageInput.disabled = false;
                 sendBtn.disabled = false;
-                logSystemMessage('✅ P2P 연결 성공! 안전한 대화를 시작하세요.');
+                statusDiv.textContent = '연결됨';
+                statusDot.style.backgroundColor = 'var(--success)';
             } else if (state === 'failed' || state === 'disconnected' || state === 'closed') {
-                statusDiv.style.color = '#ff7675';
-                logSystemMessage('❌ 연결이 끊어졌습니다. 새로고침하여 다시 연결해주세요.');
+                statusDiv.textContent = '연결 종료';
+                statusDot.style.backgroundColor = 'var(--error)';
+                logSystemMessage('연결이 종료되었습니다. 새로고침 후 다시 시도하세요.');
                 messageInput.disabled = true;
                 sendBtn.disabled = true;
             }
@@ -138,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const setupDataChannelEvents = () => {
         dataChannel.onopen = () => {};
-        dataChannel.onclose = () => logSystemMessage('데이터 채널 종료됨');
+        dataChannel.onclose = () => logSystemMessage('데이터 채널이 종료되었습니다.');
         dataChannel.onmessage = event => {
             const msgDiv = document.createElement('div');
             msgDiv.className = 'message remote';
@@ -153,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createOfferBtn.onclick = async () => {
         createOfferBtn.disabled = true;
-        createOfferBtn.textContent = '⏳ 코드 생성 중... (최대 3초 대기)';
+        createOfferBtn.textContent = '생성 중...';
         offerSdpText.placeholder = '로딩 중...';
         
         setupPeerConnection(true);
@@ -164,22 +172,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
         } catch (e) {
-            alert(`오류: ${e}`);
+            alert('오류가 발생했습니다.');
             createOfferBtn.disabled = false;
-            createOfferBtn.textContent = '1. 연결 코드 생성';
+            createOfferBtn.textContent = '코드 생성';
         }
     };
 
     createAnswerBtn.onclick = async () => {
         const receivedCode = receivedSdpAnswerText.value.trim();
         if (!receivedCode) {
-            alert('상대방에게 받은 연결 코드를 입력해주세요.');
+            alert('코드를 입력해주세요.');
             receivedSdpAnswerText.focus();
             return;
         }
 
         createAnswerBtn.disabled = true;
-        createAnswerBtn.textContent = '⏳ 응답 코드 생성 중...';
+        createAnswerBtn.textContent = '생성 중...';
         answerSdpText.placeholder = '로딩 중...';
 
         setupPeerConnection(false);
@@ -190,31 +198,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
         } catch (e) {
-            alert(`❌ 코드 형식이 잘못되었습니다. 공백 없이 정확히 복사했는지 확인해주세요.`);
+            alert('코드 형식이 올바르지 않습니다.');
             createAnswerBtn.disabled = false;
-            createAnswerBtn.textContent = '2. 응답 코드 생성';
-            answerSdpText.placeholder = '[응답 코드 대기중...]';
+            createAnswerBtn.textContent = '응답 생성';
+            answerSdpText.placeholder = '';
         }
     };
 
     connectBtn.onclick = async () => {
         const finalCode = receivedSdpFinalText.value.trim();
         if (!finalCode) {
-            alert('상대방에게 받은 응답 코드를 입력해주세요.');
+            alert('코드를 입력해주세요.');
             receivedSdpFinalText.focus();
             return;
         }
 
         connectBtn.disabled = true;
-        connectBtn.textContent = '⏳ 연결 중...';
+        connectBtn.textContent = '연결 중...';
 
         try {
             const answer = decodeSDP(finalCode);
             await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
         } catch (e) {
-            alert(`❌ 코드 형식이 잘못되었습니다. 정확히 복사했는지 확인해주세요.`);
+            alert('코드 형식이 올바르지 않습니다.');
             connectBtn.disabled = false;
-            connectBtn.textContent = '3. 연결 시작 🚀';
+            connectBtn.textContent = '연결';
         }
     };
 
@@ -231,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!message) return;
         if (message.length > 2000) {
-            alert('⚠️ 한 번에 전송할 수 있는 글자 수는 최대 2000자입니다.');
+            alert('최대 2000자까지 전송할 수 있습니다.');
             return;
         }
 
@@ -248,7 +256,13 @@ document.addEventListener('DOMContentLoaded', () => {
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
             messageInput.value = '';
+            messageInput.style.height = '40px';
             messageInput.focus();
         }
     };
+
+    messageInput.addEventListener('input', function() {
+        this.style.height = '40px';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
 });
